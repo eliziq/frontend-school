@@ -1,10 +1,17 @@
-import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Navigation from "./routes/Navigation/Navigation";
+import Courses from "./routes/Courses/Courses";
+import CourseOverview from "./routes/CourseOverview/CourseOverview";
 
 function App() {
   return (
-    <div className="App">
-      <h1>Frontend school</h1>
-    </div>
+    <Routes>
+      {/* <h1>Frontend school</h1> */}
+      <Route path="/" element={<Navigation />}>
+        <Route index={true} element={<Courses />} />
+        <Route path="course" element={<CourseOverview />} />
+      </Route>
+    </Routes>
   );
 }
 
