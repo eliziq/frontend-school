@@ -9,7 +9,7 @@ function App() {
       {/* <h1>Frontend school</h1> */}
       <Route path="/" element={<Navigation />}>
         <Route index={true} element={<Courses />} />
-        <Route path="course" element={<CourseOverview />} />
+        <Route path=":id" element={<CourseOverview />} />
       </Route>
     </Routes>
   );

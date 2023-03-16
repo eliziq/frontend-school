@@ -4,8 +4,6 @@ import coursesReducer from './courses/coursesSlice'
 export const store = configureStore({
     reducer: {
       courses: coursesReducer,
-    //   comments: commentsReducer,
-    //   users: usersReducer,
     },
   })
 

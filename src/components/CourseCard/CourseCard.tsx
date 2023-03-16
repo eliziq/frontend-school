@@ -1,6 +1,13 @@
 import { CoursePreview } from "../../store/courses/coursesTypes";
-import { CourseCardContainer, RatingContainer } from "./CourseCardStyle";
+import {
+  CourseCardContainer,
+  RatingContainer,
+  SkillsContainer,
+} from "./CourseCardStyle";
 import { memo, FC } from "react";
+import { FaStar } from "react-icons/fa";
+import { useNavigate } from "react-router";
+
 const dummy = require("../../assets/dummy.jpg");
 
 type CourseCardProps = {
@@ -8,17 +15,25 @@ type CourseCardProps = {
 };
 
 const CourseCard: FC<CourseCardProps> = memo(({ course }) => {
+  const navigate = useNavigate();
+
   return (
-    <CourseCardContainer>
+    <CourseCardContainer onClick={() => navigate(`${course.id}`)}>
       <img src={course.previewImageLink + "/cover.webp"} alt={course.title} />
       <h1>{course.title}</h1>
       <p>{course.description}</p>
 
       <RatingContainer>
-      <p>{course.lessonsCount}</p>
-      <p>{course.rating}</p>
+        <p>Lessons: {course.lessonsCount}</p>
+        <p>
+          {course.rating} <FaStar />
+        </p>
       </RatingContainer>
-      <p>skills, skills, skills</p>
+      <SkillsContainer>
+        {course.meta.skills.map((s, i) => (
+          <span key={i}>{s}</span>
+        ))}
+      </SkillsContainer>
     </CourseCardContainer>
   );
 });

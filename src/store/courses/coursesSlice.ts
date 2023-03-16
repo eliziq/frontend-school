@@ -45,7 +45,28 @@ export const fetchCourses = createAsyncThunk(
     );
     const data = await response.json();
     console.log(data);
-    return (data as any) as Promise<{courses: CoursePreview[]}>;
+    return data as any as Promise<{ courses: CoursePreview[] }>;
+  }
+);
+
+export const fetchCourse = createAsyncThunk(
+  "courses/fetchCourse",
+  async (params: { id: string }) => {
+    const token = sessionStorage.getItem("token") || "";
+    const headers = new Headers();
+    console.log(params)
+    headers.append("Authorization", "Bearer " + token);
+
+    const response = await fetch(
+      `https://api.wisey.app/api/v1/core/preview-courses/${params.id}`,
+      {
+        method: "GET",
+        headers,
+      }
+    );
+    const data = await response.json();
+    console.log(data);
+    return data as any as Promise<{ course: CourseDetails }>;
   }
 );
 
@@ -58,12 +79,23 @@ export const coursesSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchCourses.fulfilled, (state, action: PayloadAction<{courses: CoursePreview[]}>) => {
-      console.log(action);
-      
-      state.coursesList = action.payload.courses;
-    });
+    builder
+      .addCase(
+        fetchCourses.fulfilled,
+        (state, action: PayloadAction<{ courses: CoursePreview[] }>) => {
+          console.log(action);
 
+          state.coursesList = action.payload.courses;
+        }
+      )
+      .addCase(
+        fetchCourse.fulfilled,
+        (state, action: PayloadAction<{ course: CourseDetails }>) => {
+          console.log(action);
+
+          state.currentCourse = action.payload.course;
+        }
+      );
   },
 });
 export const { setCourses } = coursesSlice.actions;

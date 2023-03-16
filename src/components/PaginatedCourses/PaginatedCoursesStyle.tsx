@@ -7,9 +7,12 @@ export const PaginatedCoursesContainer = styled(ReactPaginate).attrs({
     margin-bottom: 2rem;
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: center;
     list-style-type: none;
     padding: 0 5rem;
+    li {
+      margin: 0 10px;
+    }
     li a {
       border-radius: 7px;
       padding: 0.1rem 1rem;

@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { RootState } from "../../store/store";
 import CoursesList from "../CoursesList/CoursesList";
 import { PaginatedCoursesContainer } from "./PaginatedCoursesStyle";
-const arrowLeft = require("../../assets/arrowLeft.png") as string;
+import { ReactComponent as ArrowLeft } from "../../assets/arrowLeft.svg";
 
 type PaginatedCoursesProps = {
   itemsPerPage: number;
@@ -45,24 +45,8 @@ const PaginatedCourses: FC<PaginatedCoursesProps> = ({ itemsPerPage }) => {
         pageCount={pageCount}
         onPageChange={handlePageClick}
         pageRangeDisplayed={5}
-        previousLabel={arrowLeft}
-        nextLabel={
-          <img src="../../assets/arrowLeft.png" alt="arrow" className="" />
-        }
-      />
-      {arrowLeft}
-      <ReactPaginate
-        breakLabel="..."
-        onPageChange={handlePageClick}
-        pageRangeDisplayed={5}
-        pageCount={pageCount}
+        nextLabel="next >"
         previousLabel="< previous"
-        // containerClassName={`${styles.navContainer} `}
-        // previousClassName={`${styles.nav} border-r-2 mr-11`}
-        // nextClassName={`${styles.nav} border-l-2 ml-11`}
-        // breakClassName={styles.pageNum}
-        // pageClassName={styles.pageNum}
-        // activeClassName={styles.activePageNum}
       />
     </>
   );
