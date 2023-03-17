@@ -66,7 +66,7 @@ export const fetchCourse = createAsyncThunk(
     );
     const data = await response.json();
     console.log(data);
-    return data as any as Promise<{ course: CourseDetails }>;
+    return data as any as Promise<CourseDetails>;
   }
 );
 
@@ -90,10 +90,10 @@ export const coursesSlice = createSlice({
       )
       .addCase(
         fetchCourse.fulfilled,
-        (state, action: PayloadAction<{ course: CourseDetails }>) => {
+        (state, action: PayloadAction<CourseDetails>) => {
           console.log(action);
 
-          state.currentCourse = action.payload.course;
+          state.currentCourse = action.payload;
         }
       );
   },
