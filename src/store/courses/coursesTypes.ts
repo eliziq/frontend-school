@@ -1,5 +1,3 @@
-
-
 export type CoursePreview = {
   id: string;
   title: string;
@@ -29,7 +27,7 @@ export type Lesson = {
   duration: number;
   order: number;
   type: string; //"video"
-  status: string; // "locked"/"unlocked"
+  status: "locked" | "unlocked";
   link: string;
   previewImageLink: string;
   meta: null; //???

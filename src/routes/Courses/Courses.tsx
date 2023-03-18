@@ -5,7 +5,7 @@ import PaginatedCourses from "../../components/PaginatedCourses/PaginatedCourses
 const Courses = () => {
     return (
         <CoursesContainer>
-            <h1>Courses page</h1>
+            <h1>Courses</h1>
             <PaginatedCourses itemsPerPage={10}/>
         </CoursesContainer>
     );

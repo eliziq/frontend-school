@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from "../../store/hooks";
 import { RootState } from "../../store/store";
 import CoursesList from "../CoursesList/CoursesList";
 import { PaginatedCoursesContainer } from "./PaginatedCoursesStyle";
-import { ReactComponent as ArrowLeft } from "../../assets/arrowLeft.svg";
 
 type PaginatedCoursesProps = {
   itemsPerPage: number;
@@ -16,7 +15,6 @@ const PaginatedCourses: FC<PaginatedCoursesProps> = ({ itemsPerPage }) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchToken());
     dispatch(fetchCourses());
   }, [dispatch]);
 

@@ -1,11 +1,12 @@
 import { NavigationContainer } from "./NavigationStyle";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const Navigation = () => {
+  const navigate = useNavigate();
   return (
     <>
       <NavigationContainer>
-        <h2> Navigation Bar</h2>
+        <h2 onClick={() => navigate("/")}> Home</h2>
       </NavigationContainer>
       <Outlet />
     </>

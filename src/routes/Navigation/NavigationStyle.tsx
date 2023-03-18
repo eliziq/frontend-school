@@ -7,4 +7,7 @@ export const NavigationContainer = styled.div`
   justify-content: space-between;
   margin-bottom: 25px;
   background-color: #fbe3e3;
+  h2 {
+    cursor: pointer;
+  }
 `;

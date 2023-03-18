@@ -4,11 +4,12 @@ import {
   RatingContainer,
   SkillsContainer,
 } from "./CourseCardStyle";
+import { RootState } from "../../store/store";
 import { memo, FC } from "react";
 import { FaStar } from "react-icons/fa";
 import { useNavigate } from "react-router";
-
-const dummy = require("../../assets/dummy.jpg");
+import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { resetProgress, StorageKeys } from "../../store/courses/coursesSlice";
 
 type CourseCardProps = {
   course: CoursePreview;
@@ -16,9 +17,23 @@ type CourseCardProps = {
 
 const CourseCard: FC<CourseCardProps> = memo(({ course }) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const courseIdInStore = useAppSelector(
+    (state: RootState) => state.courses.currentCourse.data
+  )?.id;
+
+  const navigateToCourse = () => {
+    if (course.id !== courseIdInStore) {
+      // reset values if changing course Todo: improve solution, subcribe to store changes
+      localStorage.removeItem(StorageKeys.latestLessonTime);
+      localStorage.removeItem(StorageKeys.latestLesson);
+      dispatch(resetProgress());
+    }
+    navigate(`${course.id}`);
+  };
 
   return (
-    <CourseCardContainer onClick={() => navigate(`${course.id}`)}>
+    <CourseCardContainer onClick={() => navigateToCourse()}>
       <img src={course.previewImageLink + "/cover.webp"} alt={course.title} />
       <h1>{course.title}</h1>
       <p>{course.description}</p>

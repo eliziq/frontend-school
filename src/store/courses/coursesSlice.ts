@@ -2,21 +2,66 @@ import { createSlice, PayloadAction, createAsyncThunk } from "@reduxjs/toolkit";
 
 import { RootState } from "../store";
 import { CoursePreview, Lesson, CourseDetails } from "./coursesTypes";
-import { useAppDispatch } from "../hooks";
+
+export enum StorageKeys {
+  latestLessonTime = "latestLessonTime",
+  latestLesson = "latestLesson",
+  token = "token",
+}
 
 interface CoursesState {
   coursesList: CoursePreview[];
-  currentCourse: CourseDetails | null;
+  currentCourse: {
+    data: CourseDetails | null;
+    progress: {
+      latestLesson: Lesson | null;
+      latestLessonTime: number | null;
+    };
+  };
 }
+
+const timeFromStorage = Number(
+  localStorage.getItem(StorageKeys.latestLessonTime) || ""
+);
+const lessonFromStorage = JSON.parse(
+  localStorage.getItem(StorageKeys.latestLesson) || ""
+);
 
 const initialState: CoursesState = {
   coursesList: [],
-  currentCourse: null,
+  currentCourse: {
+    data: null,
+    progress: {
+      latestLesson: lessonFromStorage || null,
+      latestLessonTime: timeFromStorage || null,
+    },
+  },
 };
 
-export const fetchToken = createAsyncThunk(
-  "courses/fetchToken",
-  async (thunkApi) => {
+const getToken = (): string => {
+  const token = localStorage.getItem(StorageKeys.token);
+  let exp;
+
+  if (!token) {
+    return "";
+  }
+
+  try {
+    exp = JSON.parse(atob(token.split(".")[1]))?.exp;
+  } catch (e) {
+    console.error(e);
+    return "";
+  }
+  if (new Date() > new Date(exp * 1000)) {
+    //token expired
+    return "";
+  }
+
+  return "Bearer " + token;
+};
+
+export const fetchToken = createAsyncThunk("courses/fetchToken", async () => {
+  if (!getToken()) {
     const response = await fetch(
       "https://api.wisey.app/api/v1/auth/anonymous?platform=subscriptions",
       {
@@ -24,17 +69,17 @@ export const fetchToken = createAsyncThunk(
       }
     );
     const data = await response.json();
-    sessionStorage.setItem("token", data.token);
+    localStorage.setItem(StorageKeys.token, data.token);
     return data;
   }
-);
+});
 
 export const fetchCourses = createAsyncThunk(
   "courses/fetchCourses",
-  async (thunkApi) => {
-    const token = sessionStorage.getItem("token") || "";
+  async () => {
+    const token = getToken();
     const headers = new Headers();
-    headers.append("Authorization", "Bearer " + token);
+    headers.append("Authorization", token);
 
     const response = await fetch(
       "https://api.wisey.app/api/v1/core/preview-courses",
@@ -44,7 +89,6 @@ export const fetchCourses = createAsyncThunk(
       }
     );
     const data = await response.json();
-    console.log(data);
     return data as any as Promise<{ courses: CoursePreview[] }>;
   }
 );
@@ -52,10 +96,10 @@ export const fetchCourses = createAsyncThunk(
 export const fetchCourse = createAsyncThunk(
   "courses/fetchCourse",
   async (params: { id: string }) => {
-    const token = sessionStorage.getItem("token") || "";
+    // asd
+    const token = getToken();
     const headers = new Headers();
-    console.log(params)
-    headers.append("Authorization", "Bearer " + token);
+    headers.append("Authorization", token);
 
     const response = await fetch(
       `https://api.wisey.app/api/v1/core/preview-courses/${params.id}`,
@@ -65,7 +109,6 @@ export const fetchCourse = createAsyncThunk(
       }
     );
     const data = await response.json();
-    console.log(data);
     return data as any as Promise<CourseDetails>;
   }
 );
@@ -77,27 +120,36 @@ export const coursesSlice = createSlice({
     setCourses: (state, action: PayloadAction<CoursePreview[]>) => {
       state.coursesList = action.payload;
     },
+    setLatestLesson: (state, action: PayloadAction<{ lesson: Lesson }>) => {
+      state.currentCourse.progress.latestLesson = action.payload.lesson;
+    },
+    setLatestLessonTime: (state, action: PayloadAction<{ time: number }>) => {
+      state.currentCourse.progress.latestLessonTime = action.payload.time;
+    },
+    resetProgress: (state) => {
+      state.currentCourse.progress = {
+        latestLesson: null,
+        latestLessonTime: null,
+      };
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(
         fetchCourses.fulfilled,
         (state, action: PayloadAction<{ courses: CoursePreview[] }>) => {
-          console.log(action);
-
           state.coursesList = action.payload.courses;
         }
       )
       .addCase(
         fetchCourse.fulfilled,
         (state, action: PayloadAction<CourseDetails>) => {
-          console.log(action);
-
-          state.currentCourse = action.payload;
+          state.currentCourse.data = action.payload;
         }
       );
   },
 });
-export const { setCourses } = coursesSlice.actions;
+export const { setCourses, setLatestLesson, setLatestLessonTime, resetProgress } =
+  coursesSlice.actions;
 export const selectCourses = (state: RootState) => state.courses.coursesList;
 export default coursesSlice.reducer;
